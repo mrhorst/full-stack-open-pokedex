@@ -5,7 +5,11 @@ module.exports = {
     es6: true,
     'jest/globals': true,
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -26,5 +30,10 @@ module.exports = {
     'no-console': 'error',
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 'off',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
 }
