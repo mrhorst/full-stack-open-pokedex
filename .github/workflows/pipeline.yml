@@ -19,15 +19,22 @@ jobs:
           node-version: '20'
       - name: install deps
         run: npm install
-
       - name: check style
         run: npm run eslint
-
       - name: build code
         run: npm run build
-
       - name: test code
         run: npm run test
-
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs_on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          TAG_PREFIX: v
