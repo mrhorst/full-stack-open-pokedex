@@ -31,7 +31,7 @@ jobs:
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
-    if: ${{ env.ON_PR_MERGE && (env.SKIP_COMMIT == 'false') }}
+    if: ${{ env.ON_PR_MERGE == 'true' && (env.SKIP_COMMIT == 'false') }}
     steps:
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
