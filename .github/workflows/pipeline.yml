@@ -8,12 +8,10 @@ on:
     branches: [main]
     types: [opened, synchronize]
 
-env:
-  SKIP_ON_COMMIT: ${{ contains(github.event.head_commit.message, '#skip') }}
-
 jobs:
-  quality_check:
+  simple_deployment_pipeline:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '#skip') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,18 +25,13 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
-  deploy_to_prod:
-    needs: [quality_check]
-    runs-on: ubuntu-latest
-    steps:
-      - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
-    needs: [deploy_to_prod]
+    needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '#skip') }}
     steps:
-      - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
       - uses: actions/checkout@v4
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
