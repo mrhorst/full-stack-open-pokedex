@@ -1,8 +1,5 @@
 name: deployment pipeline
 
-env:
-  SKIP_ON_COMMIT: ${{ contains(github.event.head_commit.message, '#skip') }}
-
 on:
   push:
     branches:
@@ -10,6 +7,9 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+
+env:
+  SKIP_ON_COMMIT: ${{ contains(github.event.head_commit.message, '#skip') }}
 
 jobs:
   quality_check:
@@ -29,8 +29,8 @@ jobs:
         run: npm run test
   deploy_to_prod:
     needs: [quality_check]
-    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
+    runs-on: ubuntu-latest
     steps:
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
