@@ -1,7 +1,7 @@
 name: deployment pipeline
 
 env:
-  SKIP_ON_COMMIT: ${{ contains( ${{ github.event.head_commit.message }}, '#skip') }}
+  SKIP_ON_COMMIT: ${{ contains(github.event.head_commit.message, '#skip') }}
 
 on:
   push:
