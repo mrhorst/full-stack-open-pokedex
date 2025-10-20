@@ -23,6 +23,14 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
