@@ -9,8 +9,8 @@ on:
     types: [opened, synchronize]
 
 env:
-  SKIP_COMMIT: ${{ contains(github.event.head_commit.message, '#skip') }}
-  ON_PR_MERGE: ${{ github.event_name == 'push' }}
+  SKIP_COMMIT: contains(github.event.head_commit.message, '#skip')
+  ON_PR_MERGE: github.event_name == 'push'
 
 jobs:
   quality_check:
