@@ -23,7 +23,6 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
-      - name: commit messages
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
