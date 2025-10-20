@@ -14,7 +14,6 @@ on:
 jobs:
   quality_check:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,13 +30,14 @@ jobs:
   deploy_to_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
-    if: ${{ env.SKIP_ON_COMMIT == 'false' }}
+    if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
     steps:
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [deploy_to_prod]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
