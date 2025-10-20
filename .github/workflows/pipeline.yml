@@ -29,16 +29,16 @@ jobs:
         run: npm run test
   deploy_to_prod:
     needs: [quality_check]
-    - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
     runs-on: ubuntu-latest
     steps:
+      - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
       - name: trigger render deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [deploy_to_prod]
-    - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
     runs-on: ubuntu-latest
     steps:
+      - if: ${{ github.event_name == 'push' && env.SKIP_ON_COMMIT == 'false' }}
       - uses: actions/checkout@v4
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
