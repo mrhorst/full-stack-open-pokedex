@@ -23,10 +23,6 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
-      - name: github context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
