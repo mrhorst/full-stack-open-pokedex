@@ -23,6 +23,10 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
+      - name: github_event_pr_title
+        run: echo ${{ github.event.pull_request.title }}
+      - name: check contains
+        run: echo ${{ contains(github.event.pull_request.title, '#skip') }}
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
