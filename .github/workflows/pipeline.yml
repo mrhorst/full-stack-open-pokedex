@@ -27,6 +27,14 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
+      - name: build failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v2.2.1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: error
+          text: Build failed
+          description: commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build
 
   deploy_prod:
     needs: [quality_check]
@@ -35,6 +43,14 @@ jobs:
       - name: trigger render deploy
         if: ${{ env.SHOULD_RELEASE == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: successful deploy
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v2.2.1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          text: a new version has been deployed to
+          description: https://full-stack-open-pokedex-qqea.onrender.com/ by ${{ github.actor }}
 
   tag_release:
     needs: [deploy_prod]
