@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+
+env:
+  SHOULD_RELEASE: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+
 jobs:
   quality_check:
     runs-on: ubuntu-latest
@@ -23,24 +27,21 @@ jobs:
         run: npm run build
       - name: test code
         run: npm run test
-      - name: github_event_pr_title
-        run: echo ${{ github.event.pull_request.title }}
-      - name: check contains
-        run: echo ${{ contains(github.event.pull_request.title, '#skip') }}
+
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && (contains(github.event.pull_request.title, '#skip') == 'false') }}
     steps:
       - name: trigger render deploy
+        if: ${{ env.SHOULD_RELEASE == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [deploy_prod]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '#skip') == 'false') }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
+        if: ${{ env.SHOULD_RELEASE == 'true' }}
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
