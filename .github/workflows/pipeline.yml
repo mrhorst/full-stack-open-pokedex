@@ -44,7 +44,7 @@ jobs:
         if: ${{ env.SHOULD_RELEASE == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
       - name: successful deploy
-        if: ${{ success() }}
+        if: ${{ success() && env.SHOULD_RELEASE == 'true' }}
         uses: sarisia/actions-status-discord@v1.15.4
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
