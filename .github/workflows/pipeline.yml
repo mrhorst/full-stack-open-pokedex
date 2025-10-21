@@ -31,17 +31,17 @@ jobs:
   deploy_prod:
     needs: [quality_check]
     runs-on: ubuntu-latest
-    if: ${{ env.SHOULD_RELEASE == 'true' }}
     steps:
       - name: trigger render deploy
+        if: ${{ env.SHOULD_RELEASE == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [deploy_prod]
     runs-on: ubuntu-latest
-    if: ${{ env.SHOULD_RELEASE == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
+        if: ${{ env.SHOULD_RELEASE == 'true' }}
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
