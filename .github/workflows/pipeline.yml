@@ -35,6 +35,7 @@ jobs:
       - name: trigger render deploy
         if: ${{ env.SHOULD_RELEASE == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_KEY }}?key=${{ secrets.RENDER_API_KEY }}
+
   tag_release:
     needs: [deploy_prod]
     runs-on: ubuntu-latest
